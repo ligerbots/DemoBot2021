@@ -9,7 +9,6 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DriveCommand;
 import frc.robot.subsystems.DriveTrain;
 
@@ -22,10 +21,18 @@ import frc.robot.subsystems.DriveTrain;
 public class RobotContainer {
   XboxController m_xbox = new XboxController(0);
   // The robot's subsystems and commands are defined here...
-  private final Throttle m_throttle = new Throttle();
+
+  /*
+    Notice that those variables are private. This practice is called encapsulation. The idea's that the 
+    classes internal details won't be available for outsiders to mess around with. However, in practice,
+    they have to be exposed anyways, through getters and setters. See one below. 
+  */
+  private final Throttle m_throttle = new Throttle(); // create an instance of the throttle class. See explaination below
   private final Turn m_turn = new Turn();
-  public final DriveTrain m_driveTrain = new DriveTrain();
-  public final DriveCommand m_driveCommand = new DriveCommand(m_driveTrain, m_throttle, m_turn);
+  private final DriveTrain m_driveTrain = new DriveTrain(); 
+  private final DriveCommand m_driveCommand = new DriveCommand(m_driveTrain, m_throttle, m_turn); 
+  // Notice how the drivetrain is passed into the contructor for DriveCommand. Remember that commands act upon 
+  // subsystems, so it must have access to the subsystem.
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -40,25 +47,21 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
-
-  
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
+  /*
+   * The purpose of the Throttle and Turn classes are to calculate the turn amount or throttle speed given 
+   * an xbox controller. Notice that they are declared *inside* another class. That means they are nested classes
+   * and thus can access the parent classes attributes (in this case, m_xbox).
+   * By extending DoubleSupplier, an instance of Throttle or Turn can be passed into any method (or class contructor), 
+   * as long as they expect an DoubleSupplier. That means that the receiving class/contructor can ignore *how*
+   * the value is calculated (it could be from an controller, or maybe it's randomly generated, or something else...),
+   * just that it will be a Double.
    */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return null;
-  }
-
   private class Throttle implements DoubleSupplier{
     @Override
     public double getAsDouble() {
-      //return xbox.getY(Hand.kLeft);
-      return m_xbox.getTriggerAxis(Hand.kLeft) - m_xbox.getTriggerAxis(Hand.kRight);// use trigger for throttle
+      return m_xbox.getTriggerAxis(Hand.kLeft) - m_xbox.getTriggerAxis(Hand.kRight);
     }
   }
 
@@ -67,6 +70,11 @@ public class RobotContainer {
     public double getAsDouble() {
       return m_xbox.getX(Hand.kLeft);
     }
+  }
+
+  /* The getter for m_driveCommand. Notice that it's public, meaning that outsiders can access it. */
+  public DriveCommand getDriveCommand(){
+    return(m_driveCommand);
   }
 }
 

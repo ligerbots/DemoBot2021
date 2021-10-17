@@ -6,9 +6,6 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 
 public class DriveCommand extends CommandBase {
-  /**
-   * Creates a new DriveCommand.
-   */
 
   DriveTrain m_driveTrain;
   DoubleSupplier m_throttle;

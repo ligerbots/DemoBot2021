@@ -15,14 +15,16 @@ import edu.wpi.first.wpilibj.util.Units;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    // Drive Train SPARK MAXes
-    public static final int LEADER_LEFT_CAN_ID = 1; //Drive Train Cansparkmaxes :D
+    // Drive Train SPARK MAX CAN ids
+    public static final int LEADER_LEFT_CAN_ID = 1; 
     public static final int LEADER_RIGHT_CAN_ID = 4;
     public static final int FOLLOWER_LEFT_CAN_ID = 2;
-    public static final int FOLLOWER_RIGHT_CAN_ID = 3;//Sparkmaxes for drivetrain end here
-    // Drive Train Encoders
+    public static final int FOLLOWER_RIGHT_CAN_ID = 3;
+    
+    // Drive Train Encoder CAN ids
     public static final int[] LEFT_ENCODER_PORTS = new int[]{0, 1};//DriveTrain Encoder
     public static final int[] RIGHT_ENCODER_PORTS = new int[]{2, 3};//DriveTrain Encoder
 
+    // The distance the robot has moved after one pulse of the encoder
     public static final double DISTANCE_PER_PULSE = Units.inchesToMeters(Math.PI * 6.0 / 1024);
 }
