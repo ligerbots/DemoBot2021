@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.system.LinearSystem;
+import edu.wpi.first.wpilibj.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.util.Units;
+import edu.wpi.first.wpiutil.math.numbers.N2;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -27,4 +31,21 @@ public final class Constants {
 
     // The distance the robot has moved after one pulse of the encoder
     public static final double DISTANCE_PER_PULSE = Units.inchesToMeters(Math.PI * 6.0 / 1024);
+
+
+    public static final double kvVoltSecondsPerMeter = 2.64; 
+    public static final double kaVoltSecondsSquaredPerMeter = 0.324; 
+    public static final double kvVoltSecondsPerRadian = 3.0;
+    public static final double kaVoltSecondsSquaredPerRadian = 0.3;
+
+
+    public static final LinearSystem<N2, N2, N2> kDrivetrainPlant =
+    LinearSystemId.identifyDrivetrainSystem(kvVoltSecondsPerMeter, kaVoltSecondsSquaredPerMeter,
+        kvVoltSecondsPerRadian, kaVoltSecondsSquaredPerRadian);
+
+    public static final DCMotor kDriveGearbox = DCMotor.getNEO(2);
+    public static final double kDriveGearing = 8;
+    public static final double kWheelDiameterMeters = 0.1016;
+    public static final double kTrackwidth = 0.6604;
+
 }

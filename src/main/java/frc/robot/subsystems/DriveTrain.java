@@ -9,10 +9,18 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.Constants;
@@ -41,6 +49,7 @@ public class DriveTrain extends SubsystemBase {
         want it to go (throttle & turn)
     */
     private DifferentialDrive m_differentialDrive;
+    private DifferentialDriveOdometry odometry;
 
     /*
         Encoders measure the speed a motor is going. Since we're not doing odometry (yet), they are not used.
@@ -54,6 +63,10 @@ public class DriveTrain extends SubsystemBase {
     */ 
     private AHRS m_navX;
 
+    private DifferentialDrivetrainSim drivetrainSimulator;
+    private Field2d fieldSim;
+
+
     public DriveTrain() {
 
         // Note: since we are using the DifferentialDrive class, we don't need to invert any motors.
@@ -66,6 +79,21 @@ public class DriveTrain extends SubsystemBase {
         
         m_leftEncoder.setDistancePerPulse(Constants.DISTANCE_PER_PULSE);
         m_rightEncoder.setDistancePerPulse(Constants.DISTANCE_PER_PULSE);
+
+        odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(0));
+
+        if (RobotBase.isSimulation()) {
+
+            drivetrainSimulator = new DifferentialDrivetrainSim(
+                Constants.kDrivetrainPlant,
+                Constants.kDriveGearbox,
+                Constants.kDriveGearing,
+                Constants.kTrackwidth,
+                Constants.kWheelDiameterMeters / 2.0,
+                null);
+            fieldSim = new Field2d();
+            SmartDashboard.putData("Field", fieldSim);
+        }
     }
  
     /*
@@ -80,7 +108,11 @@ public class DriveTrain extends SubsystemBase {
 
     // This method will be called once per scheduler run
     @Override
-    public void periodic() {}
+    public void periodic() {
+        odometry.update(Rotation2d.fromDegrees(getGyroAngle()), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
+    }
+
+
 
     public void arcadeDrive(double throttle, double rotate, boolean squaredInputs) {
         m_differentialDrive.arcadeDrive(throttle, -rotate, squaredInputs);
