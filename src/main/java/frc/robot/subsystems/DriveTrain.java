@@ -12,6 +12,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.hal.SimDouble;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -64,7 +66,10 @@ public class DriveTrain extends SubsystemBase {
     private AHRS m_navX;
 
     private DifferentialDrivetrainSim drivetrainSimulator;
+    private EncoderSim leftEncoderSim;
+    private EncoderSim rightEncoderSim;
     private Field2d fieldSim;
+    private SimDouble gyroAngleSim;
 
 
     public DriveTrain() {
@@ -91,6 +96,12 @@ public class DriveTrain extends SubsystemBase {
                 Constants.kTrackwidth,
                 Constants.kWheelDiameterMeters / 2.0,
                 null);
+
+            leftEncoderSim = new EncoderSim(m_leftEncoder);
+            rightEncoderSim = new EncoderSim(m_rightEncoder);
+
+            gyroAngleSim = new SimDeviceSim("navX-Sensor[0]").getDouble("Yaw");
+            
             fieldSim = new Field2d();
             SmartDashboard.putData("Field", fieldSim);
         }
@@ -111,8 +122,25 @@ public class DriveTrain extends SubsystemBase {
     public void periodic() {
         odometry.update(Rotation2d.fromDegrees(getGyroAngle()), m_leftEncoder.getDistance(), m_rightEncoder.getDistance());
     }
+    private double getGyroAngle() {
+        return Math.IEEEremainder(m_navX.getAngle(), 360) * -1;
+    }
+    @Override
+    public void simulationPeriodic() {
+      drivetrainSimulator.setInputs(-m_leftMotors.get() * RobotController.getBatteryVoltage(),
+        m_rightMotors.get() * RobotController.getBatteryVoltage());
+      drivetrainSimulator.update(0.020);
+  
+      leftEncoderSim.setDistance(drivetrainSimulator.getLeftPositionMeters());
+      leftEncoderSim.setRate(drivetrainSimulator.getLeftVelocityMetersPerSecond());
+  
+      rightEncoderSim.setDistance(drivetrainSimulator.getRightPositionMeters());
+      rightEncoderSim.setRate(drivetrainSimulator.getRightVelocityMetersPerSecond());
+  
+      gyroAngleSim.set(-drivetrainSimulator.getHeading().getDegrees());
 
-
+      fieldSim.setRobotPose(odometry.getPoseMeters());
+    }
 
     public void arcadeDrive(double throttle, double rotate, boolean squaredInputs) {
         m_differentialDrive.arcadeDrive(throttle, -rotate, squaredInputs);

@@ -61,7 +61,7 @@ public class RobotContainer {
   private class Throttle implements DoubleSupplier{
     @Override
     public double getAsDouble() {
-      return m_xbox.getTriggerAxis(Hand.kLeft) - m_xbox.getTriggerAxis(Hand.kRight);
+      return m_xbox.getY(Hand.kLeft);
     }
   }
 
