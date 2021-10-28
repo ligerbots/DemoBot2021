@@ -9,7 +9,9 @@ import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.SimpleAuto;
 import frc.robot.subsystems.DriveTrain;
 
 /**
@@ -31,6 +33,8 @@ public class RobotContainer {
   private final Turn m_turn = new Turn();
   private final DriveTrain m_driveTrain = new DriveTrain(); 
   private final DriveCommand m_driveCommand = new DriveCommand(m_driveTrain, m_throttle, m_turn); 
+
+  private final SimpleAuto m_auto = new SimpleAuto(m_driveTrain);
   // Notice how the drivetrain is passed into the contructor for DriveCommand. Remember that commands act upon 
   // subsystems, so it must have access to the subsystem.
 
@@ -47,6 +51,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    JoystickButton xboxA = new JoystickButton(m_xbox, 1);
+    xboxA.whenPressed(m_auto);
   }
 
   /*

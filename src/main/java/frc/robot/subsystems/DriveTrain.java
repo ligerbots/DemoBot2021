@@ -16,8 +16,10 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.simulation.SimDeviceSim;
@@ -110,7 +112,7 @@ public class DriveTrain extends SubsystemBase {
     /*
         This method sets the voltages of the motors.
     */
-    public void tankDriveVolts (double leftVolts, double rightVolts) {
+    public void tankDriveVolts(double leftVolts, double rightVolts) {
         m_leftMotors.setVoltage(-leftVolts);
         m_rightMotors.setVoltage(rightVolts); // make sure right is negative becuase sides are opposite
         m_differentialDrive.feed();
@@ -144,5 +146,13 @@ public class DriveTrain extends SubsystemBase {
 
     public void arcadeDrive(double throttle, double rotate, boolean squaredInputs) {
         m_differentialDrive.arcadeDrive(throttle, -rotate, squaredInputs);
+    }
+
+    public Pose2d getPose () {
+        return odometry.getPoseMeters();
+    }  
+
+    public DifferentialDriveWheelSpeeds getWheelSpeeds () {
+        return new DifferentialDriveWheelSpeeds(m_leftEncoder.getRate(), m_rightEncoder.getRate());
     }
 }

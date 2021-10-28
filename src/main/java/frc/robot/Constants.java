@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.system.LinearSystem;
 import edu.wpi.first.wpilibj.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.system.plant.LinearSystemId;
@@ -37,6 +38,8 @@ public final class Constants {
     public static final double kaVoltSecondsSquaredPerMeter = 0.324; 
     public static final double kvVoltSecondsPerRadian = 3.0;
     public static final double kaVoltSecondsSquaredPerRadian = 0.3;
+    public static final double ksVolts = 0.182; 
+    public static final double kPDriveVel = 6; 
 
 
     public static final LinearSystem<N2, N2, N2> kDrivetrainPlant =
@@ -47,5 +50,10 @@ public final class Constants {
     public static final double kDriveGearing = 8;
     public static final double kWheelDiameterMeters = 0.1016;
     public static final double kTrackwidth = 0.6604;
+
+    public static final double kRamseteB = 2;
+    public static final double kRamseteZeta = 0.7;
+
+    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidth);
 
 }
